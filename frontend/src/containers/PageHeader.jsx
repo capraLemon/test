@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router";
 import Column, { ColumnsWrapper } from "bloko/blocks/column/index.jsx";
@@ -12,19 +12,8 @@ const PageHeader = ({
   tasksVisibility,
   chatVisibility,
   userInfoVisibility,
+  tasksList,
 }) => {
-  const [tasks, setTasks] = useState([]);
-
-  useEffect(() => {
-    const initialFetchHistory = async () => {
-      const data = await fetch("http://checkup.space:9999/api/task/list");
-      const jsonedData = await data.json();
-      setTasks(jsonedData);
-      console.log("fetched tasks"); // eslint-disable-line no-console
-    };
-    initialFetchHistory();
-  }, []);
-
   const chatClick = () => {
     history.push("messenger");
   };
@@ -36,7 +25,7 @@ const PageHeader = ({
           <div className="header-content">
             <div className="header-logo-and-buttons">
               <Logo />
-              <ButtonMenu tasks={tasks} visibility={tasksVisibility} />
+              <ButtonMenu tasks={tasksList} visibility={tasksVisibility} />
               <HeaderButton
                 text="Чат"
                 click={chatClick}
@@ -58,6 +47,7 @@ PageHeader.propTypes = {
   tasksVisibility: PropTypes.bool.isRequired,
   chatVisibility: PropTypes.bool.isRequired,
   userInfoVisibility: PropTypes.bool.isRequired,
+  tasksList: PropTypes.array,
 };
 
 export default withRouter(PageHeader);

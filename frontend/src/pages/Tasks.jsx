@@ -11,26 +11,35 @@ import TaskCondition from "../components/TaskCondition";
 import HistoryOfSending from "../containers/HistoryOfSending";
 
 const Tasks = () => {
-  const [task, setTask] = useState({});
-
+  const [tasksList, setTasksList] = useState([]);
   useEffect(() => {
-    const initialFetchHistory = async () => {
+    const initialFetchTaskList = async () => {
+      const data = await fetch("http://checkup.space:9999/api/task/list");
+      const jsonedData = await data.json();
+      setTasksList(jsonedData);
+      console.log("fetched tasks"); // eslint-disable-line no-console
+    };
+    initialFetchTaskList();
+  }, []);
+
+  const [task, setTask] = useState({});
+  useEffect(() => {
+    const initialFetchText = async () => {
       const data = await fetch("http://checkup.space:9999/api/task/1000");
       const jsonedData = await data.json();
       setTask(jsonedData);
       console.log("fetched task text"); // eslint-disable-line no-console
     };
-    initialFetchHistory();
+    initialFetchText();
   }, []);
 
   const [solutions, setSolutions] = useState([]);
-
   useEffect(() => {
     const initialFetchHistory = async () => {
-      const solutions = await fetch(
+      const initialSolutions = await fetch(
         "http://checkup.space:9999/api/code/history/1000"
       );
-      const newSolutions = await solutions.json();
+      const newSolutions = await initialSolutions.json();
       setSolutions(newSolutions);
       console.log("history update initial"); // eslint-disable-line no-console
     };
@@ -41,10 +50,10 @@ const Tasks = () => {
   useEffect(() => {
     const fetchHistory = () => {
       const timeout = setTimeout(async () => {
-        const solutions = await fetch(
+        const cooldownSolutions = await fetch(
           "http://checkup.space:9999/api/code/history/1000"
         );
-        const newSolutions = await solutions.json();
+        const newSolutions = await cooldownSolutions.json();
         setSolutions(newSolutions);
         console.log("history update with timeout"); // eslint-disable-line no-console
       }, 2000);
@@ -57,7 +66,12 @@ const Tasks = () => {
 
   return (
     <React.Fragment>
-      <PageHeader tasksVisibility chatVisibility userInfoVisibility />
+      <PageHeader
+        tasksVisibility
+        chatVisibility
+        userInfoVisibility
+        tasksList={tasksList}
+      />
       <ColumnsWrapper>
         <Column m="12" l="16">
           <Gap top bottom>

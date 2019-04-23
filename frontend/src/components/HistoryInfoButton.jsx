@@ -56,7 +56,7 @@ const HistoryInfoButton = ({ id }) => {
       );
       const jsonedData = await data.json();
       setUserData(jsonedData);
-      console.log("fetched", jsonedData); // eslint-disable-line no-console
+      console.log("fetched"); // eslint-disable-line no-console
     };
     if (!mounted.current) {
       mounted.current = true;
