@@ -1,0 +1,31 @@
+.header-button {
+  width: 80px;
+  height: 70px;
+  text-align: left;
+  font-size: 16px;
+  color: white;
+  &:focus {
+    background-color: @checkup-hover;
+  }
+  &:hover {
+    background-color: @checkup-hover;
+    .header-button__sign {
+      background-color: @checkup-secondary;
+    }
+  }
+}
+
+.header-button__text {
+  margin-left: 12px;
+}
+
+.header-button__sign {
+  width: 26px;
+  height: 26px;
+  margin-left: 8px;
+  border-radius: 100%;
+  background-color: @checkup-hover;
+  display: inline-block;
+  line-height: 26px;
+  text-align: center;
+}

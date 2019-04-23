@@ -1,0 +1,50 @@
+.messenger-topic-list {
+  width: 290px;
+  height: 330px;
+  margin-right: 10px;
+  border: solid 1px @checkup-border;
+}
+
+.messenger-topic-list__button {
+  width: 290px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+  border: solid 1px @checkup-border;
+  &:hover {
+    color: @checkup-primary;
+    background-color: @checkup-buttons;
+  }
+}
+
+.messenger-topic-list__button_chosen {
+  color: @checkup-primary;
+  background-color: darken(@checkup-buttons, 10%, relative);
+}
+
+.messenger-topic-list__button-text {
+  width: 240px;
+  text-align: left;
+  font-family: proxima-nova-cond-reg;
+  font-size: 16px;
+  word-wrap: break-word;
+  color: inherit;
+}
+
+.messenger-topic-list__button_no-new-message {
+  display: none;
+}
+
+.messenger-topic-list__button_new-message {
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  background-color: @checkup-hover;
+  margin-left: 5px;
+  display: inline-block;
+  line-height: 20px;
+  text-align: center;
+  font-family: proxima-nova-bold;
+  color: @checkup-primary;
+}

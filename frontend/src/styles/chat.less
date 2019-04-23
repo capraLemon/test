@@ -1,0 +1,36 @@
+.messenger-chat {
+  width: 100%;
+  height: 330px;
+  border: solid 1px @checkup-border;
+  overflow-y: scroll;
+  scroll-behavior: auto;
+}
+
+.messenger-chat__message {
+  width: 70%;
+  margin: 15px 10px 0 10px;
+  border: solid 1px @checkup-border;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: Arial;
+  font-size: 10px;
+  color: @checkup-primary;
+  text-align: right;
+}
+
+.messenger-chat__message-text {
+  margin-bottom: 5px;
+  color: @checkup-primary;
+  text-align: left;
+}
+
+.messenger-chat__message_to-user {
+  .messenger-chat__message();
+  background-color: @checkup-secondary;
+}
+
+.messenger-chat__message_from-user {
+  .messenger-chat__message();
+  margin-left: calc(30% - 10px);
+  background-color: @checkup-messages;
+}
