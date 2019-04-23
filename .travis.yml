@@ -1,0 +1,30 @@
+addons:
+  apt:
+    packages:
+      - sshpass
+
+sudo: required
+
+services:
+  - docker
+
+dist: trusty
+
+language: java
+jdk:
+  - openjdk11
+
+before_install:
+  - export SSHPASS=$DEPLOY_PASS
+  - export SSH_CMD="sshpass -e ssh -p $DEPLOY_PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+install:
+  - mvn -f $(pwd)/backend -PproductionServer install
+
+script:
+  - docker-compose build
+
+after_success:
+  - docker save checkup-backend checkup-frontend | $SSH_CMD $DEPLOY_USER@$DEPLOY_HOST docker load
+  - rsync -e "$SSH_CMD" docker-compose.yml $DEPLOY_USER@$DEPLOY_HOST:~/checkup
+  - $SSH_CMD $DEPLOY_USER@$DEPLOY_HOST "cd checkup && docker-compose down && docker-compose up -d"

@@ -1,0 +1,22 @@
+version: "2.0"
+
+services:
+  backend:
+    image: "checkup-backend:dev"
+    ports: 
+       - "8000:9999"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: "postgres"
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ${HOME}/checkup/db:/var/lib/postgresql/data
+
+  frontend:
+    image: "checkup-frontend:dev"
+    ports:
+      - "80:80"

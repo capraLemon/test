@@ -1,0 +1,13 @@
+version: '3'
+services:
+  db:
+    image: "postgres"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: checkup_project
+    volumes:
+      - ./backend/src/main/resources/db:/docker-entrypoint-initdb.d
+    ports:
+      - 40432:5432
