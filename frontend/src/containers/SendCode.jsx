@@ -17,26 +17,26 @@ class SendCode extends Component {
 
   handleInputChange = event => {
     const enteredCode = event.target.value;
-    this.props.setCode(enteredCode);
+    this.props.setCode(enteredCode, this.props.pageId);
   };
 
   handleLangChooseClick = id => {
-    this.props.setLanguage(id);
+    this.props.setLanguage(id, this.props.pageId);
   };
 
   render() {
-    const { isFetching, code, language } = this.props;
+    const { isFetching, code, language, pageId } = this.props;
     return (
       <React.Fragment>
         <LanguageChooseButtons
-          languageId={language}
+          languageId={language[pageId]}
           onClick={this.handleLangChooseClick}
         />
         <Gap bottom />
         <Textarea
           onChange={this.handleInputChange}
-          defaultValue={code}
-          placeholder="...Enter the code"
+          value={code[pageId] === undefined ? "" : code[pageId]}
+          placeholder="...Введите свой код"
           rows={30}
           disabled={isFetching}
         />
@@ -56,17 +56,19 @@ SendCode.propTypes = {
   setLanguage: PropTypes.func.isRequired,
   sendCode: PropTypes.func.isRequired,
   isFetching: PropTypes.bool.isRequired,
-  code: PropTypes.string.isRequired,
-  language: PropTypes.string.isRequired,
+  code: PropTypes.object.isRequired,
+  language: PropTypes.object.isRequired,
   sendCounter: PropTypes.number,
+  pageId: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = ({
   codeStatus: { isFetching },
   enteredCode: { code, language },
   sendCounter,
+  pageId,
 }) => {
-  return { isFetching, code, language, sendCounter };
+  return { isFetching, code, language, sendCounter, pageId };
 };
 
 const mapDispatchToProps = {

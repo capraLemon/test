@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import classNames from "classnames";
 
 const HeaderButton = ({
   text,
@@ -7,12 +8,18 @@ const HeaderButton = ({
   visibility,
   signVisibility,
   messageNumber,
+  focus,
 }) => {
   if (!visibility) {
     return null;
   }
   return (
-    <button className="header-button" onClick={click}>
+    <button
+      className={classNames("header-button", {
+        "header-button_focused": focus,
+      })}
+      onClick={click}
+    >
       <span className="header-button__text">{text}</span>
       {signVisibility && (
         <span className="header-button__sign">{messageNumber}</span>
@@ -26,7 +33,8 @@ HeaderButton.propTypes = {
   click: PropTypes.func,
   visibility: PropTypes.bool.isRequired,
   signVisibility: PropTypes.bool.isRequired,
-  messageNumber: PropTypes.string,
+  messageNumber: PropTypes.number,
+  focus: PropTypes.bool,
 };
 
 export default HeaderButton;

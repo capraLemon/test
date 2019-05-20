@@ -4,15 +4,16 @@
   text-align: left;
   font-size: 16px;
   color: white;
-  &:focus {
-    background-color: @checkup-hover;
-  }
   &:hover {
     background-color: @checkup-hover;
     .header-button__sign {
       background-color: @checkup-secondary;
     }
   }
+}
+
+.header-button_focused {
+  background-color: @checkup-hover;
 }
 
 .header-button__text {

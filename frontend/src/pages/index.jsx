@@ -3,33 +3,20 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import MainPage from "./MainPage";
 import Messenger from "./Messenger";
 import Tasks from "./Tasks";
+import PrivateRoute from "./PageWrapper";
 
-// export default class Root extends Component {
-//   render() {
-//     return (
-//       <Router>
-//         <Switch>
-//           <Route exact path="/" component={MainPage} />
-//           <Route path="/tasks" component={Tasks} />
-//           <Route path="/order/:direction(asc|desc)" component={Tasks} />
-//           <Route path="/messenger" component={Messenger} />
-//         </Switch>
-//       </Router>
-//     );
-//   }
-// }
-
-function Root() {
+const Root = () => {
   return (
     <Router>
       <Switch>
-        <Route exact path="/" component={MainPage} />
-        <Route path="/tasks" component={Tasks} />
-        <Route path="/tasks/:id" component={Tasks} />
-        <Route path="/messenger" component={Messenger} />
+        <PrivateRoute exact path="/" component={MainPage} />
+        <Route exact path="/login" component={MainPage} />
+        <PrivateRoute path="/tasks/:id" component={Tasks} />
+        <PrivateRoute path="/messenger" component={Messenger} />
+        <PrivateRoute path="/" component={MainPage} />
       </Switch>
     </Router>
   );
-}
+};
 
 export default Root;

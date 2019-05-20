@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import { withRouter } from "react-router";
 import Column, { ColumnsWrapper } from "bloko/blocks/column/index.jsx";
 import ButtonMenu from "../components/ButtonMenu";
@@ -12,10 +13,52 @@ const PageHeader = ({
   tasksVisibility,
   chatVisibility,
   userInfoVisibility,
-  tasksList,
+  userName,
 }) => {
+  const [messageNumber, setMessageNumber] = useState(0);
+  const [tasksList, setTasksList] = useState([]);
+
+  useEffect(() => {
+    let handleTaskList = taskList => {
+      setTasksList(taskList);
+    };
+    const initialFetchTaskList = async () => {
+      const taskList = await fetch("/api/task/list");
+      const jsonedTaskList = await taskList.json();
+      handleTaskList(jsonedTaskList);
+    };
+    tasksVisibility && initialFetchTaskList();
+    return () => {
+      handleTaskList = () => {};
+    };
+  }, [tasksVisibility]);
+
+  useEffect(() => {
+    if (chatVisibility) {
+      let handleMessageNumber = quantity => {
+        setMessageNumber(quantity);
+      };
+
+      (async () => {
+        const data = await fetch("/api/message/unread");
+        const jsonedData = await data.json();
+        handleMessageNumber(jsonedData.quantity);
+      })();
+
+      const pollingInterval = setInterval(async () => {
+        const data = await fetch("/api/message/unread");
+        const jsonedData = await data.json();
+        handleMessageNumber(jsonedData.quantity);
+      }, 1000);
+      return () => {
+        clearInterval(pollingInterval);
+        handleMessageNumber = () => {};
+      };
+    }
+  }, [chatVisibility]);
+
   const chatClick = () => {
-    history.push("messenger");
+    history.push("/messenger");
   };
 
   return (
@@ -30,11 +73,11 @@ const PageHeader = ({
                 text="Чат"
                 click={chatClick}
                 visibility={chatVisibility}
-                signVisibility
-                messageNumber="1"
+                signVisibility={messageNumber > 0}
+                messageNumber={messageNumber}
               />
             </div>
-            <UserPanel userName="Маргарита" visibility={userInfoVisibility} />
+            <UserPanel userName={userName} visibility={userInfoVisibility} />
           </div>
         </Column>
       </ColumnsWrapper>
@@ -47,7 +90,11 @@ PageHeader.propTypes = {
   tasksVisibility: PropTypes.bool.isRequired,
   chatVisibility: PropTypes.bool.isRequired,
   userInfoVisibility: PropTypes.bool.isRequired,
-  tasksList: PropTypes.array,
+  userName: PropTypes.string,
 };
 
-export default withRouter(PageHeader);
+const mapStateToProps = ({ backEndMock: { userName } }) => {
+  return { userName };
+};
+
+export default withRouter(connect(mapStateToProps)(PageHeader));

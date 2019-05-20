@@ -1,125 +1,107 @@
 import React, { useState, useEffect } from "react";
-import Button from "bloko/blocks/button/index.jsx";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
 import Column, { ColumnsWrapper } from "bloko/blocks/column/index.jsx";
 import Gap from "bloko/blocks/gap/index.jsx";
-import Textarea from "bloko/blocks/textarea/index.jsx";
-import Chat from "../components/Chat";
 import ContentWrapper from "../components/ContentWrapper";
 import PageHeader from "../containers/PageHeader";
 import SendCode from "../containers/SendCode";
+import SendMessage from "../components/SendMessage";
 import TaskCondition from "../components/TaskCondition";
 import HistoryOfSending from "../containers/HistoryOfSending";
+import Timer from "../components/Timer";
+import Testing from "../components/Testing";
+import { setPageId } from "../reducers/pageId";
+import { setEditMode } from "../reducers/tests";
+import { getTests } from "../signals";
 
-const Tasks = () => {
-  const [tasksList, setTasksList] = useState([]);
+const Tasks = ({ match, setPageId, getTests, setEditMode }) => {
   useEffect(() => {
-    const initialFetchTaskList = async () => {
-      const data = await fetch("http://checkup.space:9999/api/task/list");
-      const jsonedData = await data.json();
-      setTasksList(jsonedData);
-      console.log("fetched tasks"); // eslint-disable-line no-console
-    };
-    initialFetchTaskList();
-  }, []);
+    setPageId(match.params.id);
+    setEditMode(false);
+    getTests();
+  }, [setPageId, match.params.id, getTests, setEditMode]);
 
   const [task, setTask] = useState({});
   useEffect(() => {
+    let handleTaskList = taskParams => {
+      setTask(taskParams);
+    };
     const initialFetchText = async () => {
-      const data = await fetch("http://checkup.space:9999/api/task/1000");
-      const jsonedData = await data.json();
-      setTask(jsonedData);
-      console.log("fetched task text"); // eslint-disable-line no-console
+      const taskParams = await fetch(`/api/task/${match.params.id}`);
+      const jsonedTaskParams = await taskParams.json();
+      handleTaskList(jsonedTaskParams);
     };
     initialFetchText();
-  }, []);
+    return () => {
+      handleTaskList = () => {};
+    };
+  }, [match.params.id]);
 
-  const [solutions, setSolutions] = useState([]);
+  const [history, setHistory] = useState([]);
   useEffect(() => {
+    let handleHistory = history => {
+      setHistory(history);
+    };
     const initialFetchHistory = async () => {
-      const initialSolutions = await fetch(
-        "http://checkup.space:9999/api/code/history/1000"
-      );
-      const newSolutions = await initialSolutions.json();
-      setSolutions(newSolutions);
-      console.log("history update initial"); // eslint-disable-line no-console
+      const history = await fetch(`/api/code/history/${match.params.id}`);
+      const jsonedHistory = await history.json();
+      handleHistory(jsonedHistory);
     };
 
     initialFetchHistory();
-  }, []);
-
-  useEffect(() => {
-    const fetchHistory = () => {
-      const timeout = setTimeout(async () => {
-        const cooldownSolutions = await fetch(
-          "http://checkup.space:9999/api/code/history/1000"
-        );
-        const newSolutions = await cooldownSolutions.json();
-        setSolutions(newSolutions);
-        console.log("history update with timeout"); // eslint-disable-line no-console
-      }, 2000);
-      return timeout;
+    const refreshTime = setInterval(async () => {
+      initialFetchHistory();
+    }, 1000);
+    return () => {
+      clearInterval(refreshTime);
+      handleHistory = () => {};
     };
-
-    let timeout = fetchHistory();
-    return () => clearTimeout(timeout);
-  }, [solutions]);
+  }, [match.params.id]);
 
   return (
     <React.Fragment>
-      <PageHeader
-        tasksVisibility
-        chatVisibility
-        userInfoVisibility
-        tasksList={tasksList}
-      />
+      <PageHeader tasksVisibility chatVisibility userInfoVisibility />
       <ColumnsWrapper>
         <Column m="12" l="16">
           <Gap top bottom>
-            <p className="timer">
-              До окончания тестирования осталось: 10 дней, 5 часов, 20 минут
-            </p>
+            <Timer />
           </Gap>
-          <h4>Задача 1</h4>
           <h1>{task.title}</h1>
         </Column>
         <div className="centering-wrapper">
           <Gap top bottom>
             <Column m="12" l="16">
-              <ContentWrapper
-                title={"Условие задачи"}
-                collapsible
-                opened={false}
-              >
+              <ContentWrapper title="Условие задачи" collapsible>
                 <TaskCondition task={task} />
               </ContentWrapper>
             </Column>
           </Gap>
           <Gap top bottom>
             <Column m="12" l="16">
-              <ContentWrapper title={"Ваше решение"}>
+              <ContentWrapper title="Ваше решение">
                 <SendCode />
               </ContentWrapper>
             </Column>
           </Gap>
           <Gap top bottom>
             <Column m="12" l="16">
-              <ContentWrapper
-                title={"История отправки решений"}
-                collapsible
-                opened={true}
-              >
-                <HistoryOfSending solutions={solutions} />
+              <ContentWrapper title="Тестирование" collapsible>
+                <Testing />
               </ContentWrapper>
             </Column>
           </Gap>
           <Gap top bottom>
             <Column m="12" l="16">
-              <ContentWrapper title={"Чат"} collapsible>
-                <Chat />
-                <Gap top bottom>
-                  <Textarea placeholder="Введите ваше сообщение" rows={5} />
-                </Gap>
-                <Button kind={Button.kinds.primary}>Отправить сообщение</Button>
+              <ContentWrapper title="История отправки решений" collapsible>
+                <HistoryOfSending history={history} />
+              </ContentWrapper>
+            </Column>
+          </Gap>
+          <Gap top bottom>
+            <Column m="12" l="16">
+              <ContentWrapper title="Чат" collapsible>
+                <SendMessage by="byTask/" id={match.params.id - 0} />
               </ContentWrapper>
             </Column>
           </Gap>
@@ -129,4 +111,24 @@ const Tasks = () => {
   );
 };
 
-export default Tasks;
+Tasks.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string,
+    }),
+  }),
+  setPageId: PropTypes.func.isRequired,
+  setEditMode: PropTypes.func.isRequired,
+  getTests: PropTypes.func.isRequired,
+};
+
+const mapDispatchToProps = {
+  setPageId,
+  getTests,
+  setEditMode,
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(React.memo(Tasks));

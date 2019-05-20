@@ -1,51 +1,46 @@
-import React, { Component } from "react";
+import React, { useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import onClickOutside from "react-onclickoutside";
 import HeaderButton from "./HeaderButton";
 import MenuClickList from "./MenuClickList";
 
-class ButtonMenu extends Component {
-  state = {
-    menuVisibility: false,
-  };
+const ButtonMenu = ({ visibility, tasks }) => {
+  const [menuVisibility, setMenuVisibility] = useState(false);
 
-  handleClick = () => {
-    this.setState({ menuVisibility: true });
-  };
+  const handleClick = useCallback(() => setMenuVisibility(true), []);
+  const handleListClick = useCallback(() => setMenuVisibility(false), []);
+  ButtonMenu.handleClickOutside = useCallback(
+    () => setMenuVisibility(false),
+    []
+  );
 
-  handleClickOutside = () => {
-    this.setState({ menuVisibility: false });
-  };
-
-  render() {
-    if (!this.props.visibility) {
-      return null;
-    }
-    return (
+  return (
+    visibility && (
       <div>
         <HeaderButton
           text="Задачи"
-          click={this.handleClick}
+          click={handleClick}
           visibility
           signVisibility={false}
+          focus={menuVisibility}
         />
         <MenuClickList
-          // texts={[
-          //   "Задача 1. Минимальное пропущенное число",
-          //   "Задача 2. Проклятый остров",
-          //   "Задача 3. Разрезание пирога",
-          // ]}
-          texts={this.props.tasks}
-          menuVisibility={this.state.menuVisibility}
+          texts={tasks}
+          menuVisibility={menuVisibility}
+          handleListClick={handleListClick}
         />
       </div>
-    );
-  }
-}
+    )
+  );
+};
+
+const clickOutsideConfig = {
+  handleClickOutside: () => ButtonMenu.handleClickOutside,
+};
 
 ButtonMenu.propTypes = {
   visibility: PropTypes.bool.isRequired,
   tasks: PropTypes.array,
 };
 
-export default onClickOutside(ButtonMenu);
+export default onClickOutside(ButtonMenu, clickOutsideConfig);

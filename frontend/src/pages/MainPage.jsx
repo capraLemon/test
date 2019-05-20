@@ -1,26 +1,27 @@
 import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import AnonBefore from "./AnonBefore";
-import UserBefore from "./UserBefore";
 import AnonAfter from "./AnonAfter";
 import UserAfter from "./UserAfter";
+import { Route, Redirect } from "react-router-dom";
 
-const mapPageToComponent = {
-  AnonBefore,
-  UserBefore,
-  AnonAfter,
-  UserAfter,
+const MainPage = ({ location, contestStarted }) => {
+  if (location.state === "anon") {
+    return <AnonAfter />; //Should be just Anon in the future (because we will GET data from backend )
+  }
+  if (!contestStarted) {
+    return <UserAfter />;
+  }
+  return <Route render={() => <Redirect to={{ pathname: "/tasks/1000" }} />} />;
 };
-
-const MainPage = ({ Page }) => <Page />;
 
 MainPage.propTypes = {
-  Page: PropTypes.func.isRequired,
+  location: PropTypes.object,
+  contestStarted: PropTypes.bool,
 };
 
-const mapStateToProps = ({ pageToGive: { mainPage } }) => {
-  return { Page: mapPageToComponent[mainPage] };
+const mapStateToProps = ({ backEndMock: { contestStarted } }) => {
+  return { contestStarted };
 };
 
 export default connect(mapStateToProps)(MainPage);

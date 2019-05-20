@@ -6,8 +6,8 @@ export const givePage = page => ({
 });
 
 // const mainPage = "AnonBefore";
-const mainPage = "UserBefore";
-// const mainPage = "AnonAfter";
+// const mainPage = "UserBefore";
+const mainPage = "AnonAfter";
 // const mainPage = "UserAfter";
 
 export const pageToGive = (state = { mainPage }, action) => {

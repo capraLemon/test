@@ -2,68 +2,45 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import Icon from "bloko/blocks/icon/Icon.jsx";
 import Modal from "bloko/blocks/modal/index.jsx";
-// import Modal from "./Modal";
 import Column, { ColumnsWrapper } from "bloko/blocks/column/index.jsx";
 import Gap from "bloko/blocks/gap/index.jsx";
 import ContentWrapper from "./ContentWrapper";
 import Textarea from "bloko/blocks/textarea/index.jsx";
-
-const mapStatusToText = {
-  //vnimanie - uzhe bilo v HistoryOfSendings
-  IN_QUEUE: "В очереди на проверку",
-  PROCESSING: "! В процессе проверки",
-  ACCEPTED: "! Решение принято",
-  WRONG_ANSWER: "Неправильный ответ",
-  TIME_LIMIT_EXCEEDED: "Превышение лимита времени выполнения",
-  COMPILATION_ERROR: "Ошибка компиляции",
-  RUNTIME_ERROR_SIGSEGV: "! Ошибка во время выполнения (SIGSEGV)",
-  RUNTIME_ERROR_SIGXFSZ: "! Ошибка во время выполнения (SIGXFSZ)",
-  RUNTIME_ERROR_SIGFPE: "! Ошибка во время выполнения (SIGFPE)",
-  RUNTIME_ERROR_SIGABRT: "! Ошибка во время выполнения (SIGABRT)",
-  RUNTIME_ERROR_NZEC: "! Ошибка во время выполнения (NZEC)",
-  RUNTIME_ERROR_OTHER: "! Ошибка во время выполнения (Other)",
-  INTERNAL_ERROR: "! Внутренняя ошибка",
-};
-
-const mapIdToButtonName = {
-  //vnimanie - uzhe bilo v HistoryOfSendings
-  PYTHON: "Python",
-  JAVA: "Java",
-  JAVA_SCRIPT: "JavaScript",
-};
+import { mapIdToButtonName, mapStatusToText } from "../constants";
 
 const HistoryInfoButton = ({ id }) => {
   const [show, toggleShow] = useState(false);
   const [userData, setUserData] = useState({});
-
   const mounted = useRef();
-  const [crunch, setCrunch] = useState(0);
+  const [fetchSignal, setFetchSignal] = useState(true);
 
   const openSendedCode = useCallback(() => {
-    console.log("opened"); // eslint-disable-line no-console
     toggleShow(true);
-    setCrunch(crunch + 1);
-  }, [crunch]);
+    setFetchSignal(!fetchSignal);
+  }, [fetchSignal]);
 
   const closeSendedCode = useCallback(() => {
     toggleShow(false);
   }, []);
 
   useEffect(() => {
-    const initialFetchHistory = async () => {
-      const data = await fetch(
-        `http://checkup.space:9999/api/code/history/details/${id}`
-      );
-      const jsonedData = await data.json();
-      setUserData(jsonedData);
-      console.log("fetched"); // eslint-disable-line no-console
+    let handleDetails = details => {
+      setUserData(details);
+    };
+    const fetchDetails = async () => {
+      const details = await fetch(`/api/code/history/details/${id}`);
+      const jsonedDetails = await details.json();
+      handleDetails(jsonedDetails);
     };
     if (!mounted.current) {
       mounted.current = true;
     } else {
-      initialFetchHistory();
+      fetchDetails();
     }
-  }, [id, crunch]);
+    return () => {
+      handleDetails = () => {};
+    };
+  }, [id, fetchSignal]);
 
   return (
     <React.Fragment>
@@ -99,7 +76,7 @@ const HistoryInfoButton = ({ id }) => {
                 </tbody>
               </table>
               <Gap bottom />
-              <Textarea value={userData.solutionText} rows={30} readOnly />
+              <Textarea value={userData.solutionText} rows={18} readOnly />
             </ContentWrapper>
           </Column>
         </ColumnsWrapper>

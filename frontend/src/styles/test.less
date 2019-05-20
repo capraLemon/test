@@ -1,0 +1,93 @@
+.test-wrapper {
+  width: 335px;
+  border: 1px solid grey;
+  display: flex;
+  margin-bottom: 10px;
+  padding-left: 15px;
+}
+
+.test-wrapper_pass {
+  border-left: 10px solid @checkup-passed;
+}
+
+.test-wrapper_neutral {
+  border-left: 10px solid #6a737b;
+  border-left: 10px solid grey;
+}
+
+.test-wrapper_fail {
+  border-left: 10px solid @checkup-hover;
+}
+
+.test {
+  width: 310px;
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+.test_disabled {
+  pointer-events: none;
+}
+
+.test__start-sign {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-left: 15px solid @checkup-passed;
+  border-bottom: 10px solid transparent;
+  margin-right: 15px;
+}
+
+.test__text {
+  font-size: 16px;
+  padding: 10px 0px 10px 0px;
+  font-family: Arial;
+  width: 260px; //or 240?
+  width: 240px; //or 240?
+  width: 230px; //or 230?
+  word-break: break-word;
+  pointer-events: auto;
+}
+
+.test__text_active {
+  font-weight: bold;
+}
+
+.test__text_edit {
+  outline: none;
+  word-break: break-word;
+}
+
+.test-wrapper .test__loading-sign {
+  //??????????
+  display: flex;
+  margin-left: 4px;
+  margin-left: 8px;
+}
+
+.test-wrapper .test__edit-sign {
+  display: flex;
+  visibility: hidden;
+  margin-left: 8px;
+  margin-left: 12px;
+}
+
+.test-wrapper:hover .test__edit-sign {
+  visibility: visible;
+}
+
+.test__edit-sign_hidden {
+  display: none !important;
+}
+
+.test__cancel-confirm {
+  margin-left: 8px;
+  margin-left: 12px;
+  display: flex !important;
+  flex-direction: column;
+}
+
+.test__cancel-confirm_hidden {
+  display: none;
+}

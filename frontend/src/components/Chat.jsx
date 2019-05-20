@@ -1,46 +1,68 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import classNames from "classnames";
 
-const messages = [
-  {
-    id: 0,
-    from: false,
-    text: "Здравствуй, здесь вы можете задать свои вопросы.",
-    date: "23:03 10.10.2019",
-    unread: false,
-  },
-  {
-    id: 1,
-    from: true,
-    text: "Здравствуй, считается ли 0 натуральным числом?",
-    date: "4:18 15.10.2019",
-    unread: false,
-  },
-  {
-    id: 2,
-    from: false,
-    text: "Читайте условия задачи.",
-    date: "14:05 25.10.2019",
-    unread: false,
-  },
-];
+const Chat = ({ byWhat, id, handleMouseOver }) => {
+  const [messages, setMessages] = useState([]);
 
-const Chat = () => {
+  useEffect(() => {
+    let handleMessaesList = messagesList => {
+      setMessages(messagesList);
+    };
+
+    (async () => {
+      const data = await fetch(`/api/message/${byWhat}${id}`);
+      const jsonedData = await data.json();
+      handleMessaesList(jsonedData);
+    })();
+
+    const pollingInterval = setInterval(async () => {
+      const data = await fetch(`/api/message/${byWhat}${id}`);
+      const jsonedData = await data.json();
+      handleMessaesList(jsonedData);
+    }, 1000);
+    return () => {
+      clearInterval(pollingInterval);
+      handleMessaesList = () => {};
+    };
+  }, [byWhat, id]);
+
+  const showDate = timestamp => {
+    const options = {
+      hour: "numeric",
+      minute: "numeric",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    let date = new Date();
+    date.setTime(timestamp);
+    return date.toLocaleString("ru", options);
+  };
+
   return (
-    <div className="messenger-chat">
-      {messages.map(message => (
+    <div className="messenger-chat" onMouseOver={handleMouseOver}>
+      {messages.map((message, index) => (
         <div
-          key={message.id}
+          key={index}
           className={classNames("messenger-chat__message_to-user", {
-            "messenger-chat__message_from-user": message.from,
+            "messenger-chat__message_from-user": message.senderIsUser,
           })}
         >
-          <p className="messenger-chat__message-text">{message.text}</p>
-          {message.date}
+          {message.messageText}
+          <p className="messenger-chat__message-date">
+            {showDate(message.creationDate)}
+          </p>
         </div>
       ))}
     </div>
   );
+};
+
+Chat.propTypes = {
+  byWhat: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
+  handleMouseOver: PropTypes.func.isRequired,
 };
 
 export default Chat;

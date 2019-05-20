@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import classNames from "classnames";
+// import classNames from "classnames";
 import Gap from "bloko/blocks/gap/index.jsx";
 import Button from "bloko/blocks/button/index.jsx";
 import Icon from "bloko/blocks/icon/Icon.jsx";
 
-const SendCodeButtonCounter = ({ isFetching = false, onClick, triesLeft }) => {
+// const SendCodeButtonCounter = ({ isFetching = false, onClick, triesLeft }) => {
+const SendCodeButtonCounter = ({ isFetching = false, onClick }) => {
   return (
     <div className="code-send-wrapper">
       <div className="code-send__button">
@@ -27,9 +28,9 @@ const SendCodeButtonCounter = ({ isFetching = false, onClick, triesLeft }) => {
         </Button>
       </div>
       <Gap right />
-      <p className={classNames({ "code-send__counter": !isFetching })}>
+      {/* <p className={classNames({ "code-send__counter": !isFetching })}>
         Оставшиеся попытки: {triesLeft}
-      </p>
+      </p> */}
     </div>
   );
 };
@@ -37,7 +38,7 @@ const SendCodeButtonCounter = ({ isFetching = false, onClick, triesLeft }) => {
 SendCodeButtonCounter.propTypes = {
   isFetching: PropTypes.bool,
   onClick: PropTypes.func,
-  triesLeft: PropTypes.number,
+  // triesLeft: PropTypes.number,
 };
 
 export default SendCodeButtonCounter;

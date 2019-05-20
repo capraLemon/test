@@ -10,8 +10,9 @@ module.exports = {
   entry: ["regenerator-runtime", entryPath],
   mode: mode,
   output: {
-    filename: "bundle.js",
+    filename: "bundle.[hash].js",
     path: outputPath,
+    publicPath: "/",
   },
   devServer: {
     contentBase: "./dist",
